@@ -1,8 +1,9 @@
 import React, { useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { useForm } from "react-hook-form";
-// import { authService } from "../../firebase";
-import firebase from "../../firebase";
+import firebase, { authService, dbService } from "../../firebase";
+// import firebase from "../../firebase";
+import { getDatabase, ref, set } from "firebase/database";
 import md5 from "md5";
 
 function RegisterPage() {
@@ -24,9 +25,10 @@ function RegisterPage() {
   const onSubmit = async (data) => {
     try {
       setLoading(true);
-      let createdUser = await firebase
-        .auth()
-        .createUserWithEmailAndPassword(data.email, data.password);
+      let createdUser = await authService.createUserWithEmailAndPassword(
+        data.email,
+        data.password
+      );
 
       console.log("createdUser", createdUser);
 
@@ -38,8 +40,12 @@ function RegisterPage() {
       });
 
       //Firebase 데이터베이스에 저장해주기
-
-      await firebase.database().ref("users").child(createdUser.user.uid).set({
+      const db = getDatabase();
+      //   await dbService.ref("users").child(createdUser.user.uid).set({
+      //     name: createdUser.user.displayName,
+      //     image: createdUser.user.photoURL,
+      //   });
+      set(ref(db, "users/" + createdUser.user.uid), {
         name: createdUser.user.displayName,
         image: createdUser.user.photoURL,
       });
@@ -55,6 +61,15 @@ function RegisterPage() {
       }, 5000);
     }
   };
+
+  //   function writeUserData(userId, name, email, imageUrl) {
+  //     const db = getDatabase();
+  //     set(ref(db, 'users/' + userId), {
+  //       username: name,
+  //       email: email,
+  //       profile_picture : imageUrl
+  //     });
+  //   }
 
   return (
     <div className="auth-wrapper">
