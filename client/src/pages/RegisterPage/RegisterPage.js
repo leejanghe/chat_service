@@ -1,7 +1,7 @@
 import React, { useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { useForm } from "react-hook-form";
-import firebase, { authService, dbService } from "../../firebase";
+import { authService } from "../../firebase";
 // import firebase from "../../firebase";
 import { getDatabase, ref, set } from "firebase/database";
 import md5 from "md5";
@@ -145,7 +145,7 @@ function RegisterPage() {
 
         <input type="submit" disabled={loading} />
 
-        <Link style={{ color: "gray", textDecoration: "none" }} to="login">
+        <Link style={{ color: "gray", textDecoration: "none" }} to="/login">
           이미 아이디가 있다면...{" "}
         </Link>
       </form>
