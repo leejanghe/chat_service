@@ -5,7 +5,7 @@ import ChatPage from "./pages/ChatPage/ChatPage";
 import { useEffect } from "react";
 import { authService } from "./firebase";
 import { useDispatch, useSelector } from "react-redux";
-import { setUser } from "./redux/actions/user_action";
+import { setUser, clearUser } from "./redux/actions/user_action";
 
 function App() {
   const navigate = useNavigate();
@@ -19,6 +19,7 @@ function App() {
         dispatch(setUser(user));
       } else {
         navigate("/login");
+        dispatch(clearUser());
       }
     });
   }, []);
