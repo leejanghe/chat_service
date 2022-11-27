@@ -2,12 +2,15 @@ import React from "react";
 import { IoIosChatboxes } from "react-icons/io";
 import Dropdown from "react-bootstrap/Dropdown";
 import Image from "react-bootstrap/Image";
-import { useSelector } from "react-redux";
-import { authService, storageService } from "../../../firebase";
+import { useDispatch, useSelector } from "react-redux";
+import { authService, storageService, dbService } from "../../../firebase";
 import { useRef } from "react";
+import { setPhotoURL } from "../../../redux/actions/user_action";
+import { getDatabase, ref, set } from "firebase/database";
 
 function UserPanel(props) {
   const user = useSelector((state) => state.user.currentUser);
+  const dispatch = useDispatch();
   const inputOpenImageRef = useRef();
   const handleLogout = () => {
     authService.signOut();
@@ -27,8 +30,22 @@ function UserPanel(props) {
         .child(`user_image/${user.uid}`)
         .put(file, metadata);
       console.log(uploadTaskSnapshot);
+
+      let downloadUrl = await uploadTaskSnapshot.ref.getDownloadURL();
+
+      //프로필 이미지 수정
+      await authService.currentUser.updateProfile({
+        photoURL: downloadUrl,
+      });
+      dispatch(setPhotoURL(downloadUrl));
+
+      //데이터베이서 유저 이미지 수정
+      const db = getDatabase();
+      set(ref(db, "users/" + user.uid), {
+        image: downloadUrl,
+      });
     } catch (error) {
-      // alert(error);
+      alert(error);
     }
   };
 
