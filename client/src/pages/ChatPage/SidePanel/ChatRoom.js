@@ -32,7 +32,7 @@ class ChatRoom extends Component {
   }
 
   componentWillUnmount() {
-    this.state.chatRoomsRef.off();
+    off(this.state.chatRoomsRef);
   }
 
   setFirstChatRoom = () => {
