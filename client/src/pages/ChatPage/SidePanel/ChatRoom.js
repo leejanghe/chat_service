@@ -31,6 +31,10 @@ class ChatRoom extends Component {
     this.AddChatRoomsListeners();
   }
 
+  componentWillUnmount() {
+    this.state.chatRoomsRef.off();
+  }
+
   setFirstChatRoom = () => {
     if (this.state.firstLoad && this.state.chatRooms.length > 0) {
       this.props.dispatch(setCurrentChatRoom(this.state.chatRooms[0]));
