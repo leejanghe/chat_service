@@ -21,6 +21,30 @@ class ChatRoom extends Component {
     name: "",
     description: "",
     chatRoomsRef: ref(getDatabase(), "chatRooms"),
+    chatRooms: [],
+  };
+
+  componentDidMount() {
+    this.AddChatRoomsListeners();
+  }
+
+  AddChatRoomsListeners = () => {
+    let chatRoomsArray = [];
+
+    // this.state.chatRoomsRef.on("child_added", (DataSnapshot) => {
+    //   chatRoomsArray.push(DataSnapshot.val());
+    //   console.log(chatRoomsArray);
+    // });
+
+    onChildAdded(this.state.chatRoomsRef, (DataSnapshot) => {
+      chatRoomsArray.push(DataSnapshot.val());
+      console.log(chatRoomsArray);
+      this.setState({ chatRooms: chatRoomsArray });
+      //   this.setState({ chatRooms: chatRoomsArray }, () =>
+      // this.setFirstChatRoom()
+      //   );
+      //   this.addNotificationListener(DataSnapshot.key);
+    });
   };
 
   handleClose = () => this.setState({ show: false });
@@ -60,9 +84,14 @@ class ChatRoom extends Component {
     }
   };
 
-  isFormValid = (name, description) => {
-    return name && description;
-  };
+  isFormValid = (name, description) => name && description;
+  renderChatRooms = (chatRooms) =>
+    chatRooms.length > 0 &&
+    chatRooms.map((room) => (
+      <li key={room.id} style={{ listStyleType: "none" }}>
+        # {room.name}
+      </li>
+    ));
 
   render() {
     return (
@@ -82,6 +111,11 @@ class ChatRoom extends Component {
             style={{ position: "absolute", right: "0", cursor: "pointer" }}
           />
         </div>
+
+        {/* chat romm list */}
+        <ul style={{ listStyleType: "none", padding: 0 }}>
+          {this.renderChatRooms(this.state.chatRooms)}
+        </ul>
 
         {/* modal */}
 
