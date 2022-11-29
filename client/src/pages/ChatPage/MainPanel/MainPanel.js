@@ -23,7 +23,7 @@ class MainPanel extends Component {
 
     if (chatRoom) {
       this.addMessagesListeners(chatRoom.id);
-      this.addTypingListeners(chatRoom.id);
+      //   this.addTypingListeners(chatRoom.id);
     }
   }
 
@@ -38,7 +38,7 @@ class MainPanel extends Component {
         messages: messagesArray,
         messagesLoading: false,
       });
-      this.userPostsCount(messagesArray);
+      //   this.userPostsCount(messagesArray);
     });
   };
 
@@ -54,6 +54,7 @@ class MainPanel extends Component {
 
   render() {
     const { messages } = this.state;
+    console.log("messages", messages);
     return (
       <div
         style={{
@@ -69,7 +70,8 @@ class MainPanel extends Component {
             overflowY: "auto",
           }}
         >
-          <Message />
+          {/* <Message /> */}
+          {this.renderMessages(messages)}
         </div>
         <MessageForm />
       </div>
