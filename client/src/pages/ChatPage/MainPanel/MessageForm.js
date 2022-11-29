@@ -7,7 +7,7 @@ import { getDatabase, ref, set, remove, push, child } from "firebase/database";
 import { useSelector } from "react-redux";
 function MessageForm(props) {
   const user = useSelector((state) => state.user.currentUser);
-  const chatRoom = useSelector((state) => state.ChatRoom.currentChatRoom);
+  const chatRoom = useSelector((state) => state.chatRoom.currentChatRoom);
   //   console.log("chatRoom", chatRoom);
   const [content, setContent] = useState("");
   const [errors, setErrors] = useState([]);
