@@ -83,21 +83,40 @@ function MessageForm(props) {
 
     const filePath = `message/public/${file.name}`;
     const metadata = { contentType: file.type };
-
+    setLoading(true);
     try {
       // 스토리지에 파일 저장
       let uploadTask = storageRef.child(filePath).put(file, metadata);
 
       // 파일 저장되는 퍼센티지 구하기
-      uploadTask.on("state_changed", (UploadTaskSnapshot) => {
-        const percentage = Math.round(
-          (UploadTaskSnapshot.bytesTransferred /
-            UploadTaskSnapshot.totalBytes) *
-            100
-        );
-        console.log("percentage", percentage);
-        setPercentage(percentage);
-      });
+      uploadTask.on(
+        "state_changed",
+        (UploadTaskSnapshot) => {
+          const percentage = Math.round(
+            (UploadTaskSnapshot.bytesTransferred /
+              UploadTaskSnapshot.totalBytes) *
+              100
+          );
+          console.log("percentage", percentage);
+          setPercentage(percentage);
+        },
+        (err) => {
+          console.error.apply(err);
+          setLoading(false);
+        },
+        () => {
+          // 저장이 다 된 후에 파일 메시지 전송 (디비 저장)
+          // 저장된 파일을 다운로드 받을 수 있는 유알엘 가져오기
+          uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
+            console.log("downloadURL", downloadURL);
+            set(
+              push(child(messagesRef, chatRoom.id)),
+              createMessage(downloadURL)
+            );
+            setLoading(false);
+          });
+        }
+      );
     } catch (err) {
       alert(err);
     }
@@ -140,6 +159,7 @@ function MessageForm(props) {
             style={{
               width: "100%",
             }}
+            disabled={loading ? true : false}
           >
             Send
           </button>
@@ -151,6 +171,7 @@ function MessageForm(props) {
             style={{
               width: "100%",
             }}
+            disabled={loading ? true : false}
           >
             Upload
           </button>
