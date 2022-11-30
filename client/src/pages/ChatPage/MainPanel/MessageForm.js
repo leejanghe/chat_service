@@ -20,6 +20,7 @@ function MessageForm(props) {
   const [content, setContent] = useState("");
   const [errors, setErrors] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [percentage, setPercentage] = useState(0);
   const messagesRef = ref(getDatabase(), "messages");
   const inputOpenImageRef = useRef();
   // const storageRef = ref(getStorage());
@@ -77,14 +78,26 @@ function MessageForm(props) {
     inputOpenImageRef.current.click();
   };
 
-  const handleUploadImage = async (event) => {
+  const handleUploadImage = (event) => {
     const file = event.target.files[0];
 
     const filePath = `message/public/${file.name}`;
     const metadata = { contentType: file.type };
 
     try {
-      await storageRef.child(filePath).put(file, metadata);
+      // 스토리지에 파일 저장
+      let uploadTask = storageRef.child(filePath).put(file, metadata);
+
+      // 파일 저장되는 퍼센티지 구하기
+      uploadTask.on("state_changed", (UploadTaskSnapshot) => {
+        const percentage = Math.round(
+          (UploadTaskSnapshot.bytesTransferred /
+            UploadTaskSnapshot.totalBytes) *
+            100
+        );
+        console.log("percentage", percentage);
+        setPercentage(percentage);
+      });
     } catch (err) {
       alert(err);
     }
@@ -104,7 +117,14 @@ function MessageForm(props) {
         </Form.Group>
       </Form>
 
-      <ProgressBar variant="warning" label="60%" now={45} />
+      {!(percentage === 0 || percentage === 100) && (
+        <ProgressBar
+          variant="warning"
+          label={`${percentage}%`}
+          now={percentage}
+        />
+      )}
+
       <div>
         {errors.map((errorMsg) => (
           <p style={{ color: "red" }} key={errorMsg}>
