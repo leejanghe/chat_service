@@ -1,10 +1,18 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import Form from "react-bootstrap/Form";
 import ProgressBar from "react-bootstrap/ProgressBar";
 import Row from "react-bootstrap/esm/Row";
 import Col from "react-bootstrap/esm/Col";
 import { getDatabase, ref, set, remove, push, child } from "firebase/database";
+import { storageService } from "../../../firebase";
+// import {
+//   getStorage,
+//   ref as strRef,
+//   uploadBytesResumable,
+//   getDownloadURL,
+// } from "firebase/storage";
 import { useSelector } from "react-redux";
+
 function MessageForm(props) {
   const user = useSelector((state) => state.user.currentUser);
   const chatRoom = useSelector((state) => state.chatRoom.currentChatRoom);
@@ -13,6 +21,9 @@ function MessageForm(props) {
   const [errors, setErrors] = useState([]);
   const [loading, setLoading] = useState(false);
   const messagesRef = ref(getDatabase(), "messages");
+  const inputOpenImageRef = useRef();
+  // const storageRef = ref(getStorage());
+  const storageRef = storageService.ref();
 
   const handleChange = (event) => {
     setContent(event.target.value);
@@ -62,6 +73,23 @@ function MessageForm(props) {
     }
   };
 
+  const handleOpenImageRef = () => {
+    inputOpenImageRef.current.click();
+  };
+
+  const handleUploadImage = async (event) => {
+    const file = event.target.files[0];
+
+    const filePath = `message/public/${file.name}`;
+    const metadata = { contentType: file.type };
+
+    try {
+      await storageRef.child(filePath).put(file, metadata);
+    } catch (err) {
+      alert(err);
+    }
+  };
+
   return (
     <div>
       <Form onSubmit={handleSubmit}>
@@ -98,6 +126,7 @@ function MessageForm(props) {
         </Col>
         <Col>
           <button
+            onClick={handleOpenImageRef}
             className="message-form-button"
             style={{
               width: "100%",
@@ -107,6 +136,14 @@ function MessageForm(props) {
           </button>
         </Col>
       </Row>
+
+      <input
+        accept="image/jpeg, image/png"
+        style={{ display: "none" }}
+        type="file"
+        ref={inputOpenImageRef}
+        onChange={handleUploadImage}
+      />
     </div>
   );
 }
