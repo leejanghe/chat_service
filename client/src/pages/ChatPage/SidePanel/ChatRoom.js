@@ -5,7 +5,10 @@ import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import { connect } from "react-redux";
-import { setCurrentChatRoom } from "../../../redux/actions/chatRoom_action";
+import {
+  setCurrentChatRoom,
+  setPrivateChatRoom,
+} from "../../../redux/actions/chatRoom_action";
 import {
   getDatabase,
   ref,
@@ -96,6 +99,7 @@ class ChatRoom extends Component {
 
   changeChatRoom = (room) => {
     this.props.dispatch(setCurrentChatRoom(room));
+    this.props.dispatch(setPrivateChatRoom(true));
     this.setState({ activeChatRoomId: room.id });
   };
 
